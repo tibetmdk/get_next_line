@@ -6,7 +6,7 @@
 /*   By: tmidik <tibetmdk@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/10 01:01:37 by tmidik            #+#    #+#             */
-/*   Updated: 2024/11/10 22:49:51 by tmidik           ###   ########.fr       */
+/*   Updated: 2024/11/11 15:32:53 by tmidik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,12 @@ char	*read_line(int fd, char *remain)
 	return (remain);
 }
 
-int main()
+char	*get_next_line(int fd)
 {
-	
+	static char	*stack;
+
+	stack = read_line(fd, stack);
+	return (stack);
 }
+
+
