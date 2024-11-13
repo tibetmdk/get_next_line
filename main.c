@@ -4,6 +4,15 @@
 
 int main()
 {
-	int fd = open("tiebt.txt", O_RDWR, 0777);
-	get_next_line(fd);
+    int fd;
+    char *line;
+    fd = open("test.txt", O_RDONLY);
+    int a = 3;
+    line = get_next_line(fd);
+    while (a)
+    {
+        printf("%s", line);
+        free(line);
+    }
+    return (0);
 }
