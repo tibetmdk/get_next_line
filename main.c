@@ -6,11 +6,11 @@ int main()
 {
     int fd;
     char *line;
-    fd = open("test.txt", O_RDONLY);
-    int a = 3;
-    line = get_next_line(fd);
-    while (a)
+    fd = open("a.txt", O_RDONLY);
+    int a = 5;
+    while (a--)
     {
+        line = get_next_line(fd);
         printf("%s", line);
         free(line);
     }
