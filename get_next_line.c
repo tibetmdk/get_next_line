@@ -5,97 +5,83 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmidik <tibetmdk@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/10 01:01:37 by tmidik            #+#    #+#             */
-/*   Updated: 2024/11/19 20:39:04 by tmidik           ###   ########.fr       */
+/*   Created: 2024/11/24 20:08:49 by tmidik            #+#    #+#             */
+/*   Updated: 2024/11/25 13:15:01 by tmidik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
 
-char *ft_update_line(char *remain)
+static char	*read_line(int fd, char *remain)
 {
-	int		i;
-	int		j;
-	char	*new;
-	i = 0;
-	printf("1");
-	while (remain[i] != '\0' && remain[i] != '\n')
-		i++;
-	if (remain[i] == '\0')
+	char		*buffer;
+	int			readed;
+
+	readed = 1;
+	buffer = (char *)malloc(BUFFER_SIZE + 1);
+	if (!buffer)
 		return (NULL);
-	new = (char *)malloc(ft_strlen(remain) - i + 1);
-	if (!new)
-		return (NULL);
-	i++;
-	j = 0;
-	printf("2");
-	while (remain[i])
-		new[j++] = remain[i++];
-	new[j] = '\0';
-	printf("3");
-	return (new);
+	while (!ft_strchr(remain, '\n') && readed != 0)
+	{
+		readed = read(fd, buffer, BUFFER_SIZE);
+		if (readed == -1)
+		{
+			free(buffer);
+			free(remain);
+			return (NULL);
+		}
+		buffer[readed] = '\0';
+		remain = ft_strjoin(remain, buffer);
+	}
+	free(buffer);
+	return (remain);
 }
 
-char	*ft_get_line(char *remain)
+static char	*line_generator(char *str)
 {
-	int		len;
 	int		i;
 	char	*line;
 
-	printf("4");
-	while (remain[len] != '\0' && remain[len] != '\n')
-		len++;
-	if (*remain == '\0')
-		line = (char *)malloc(sizeof(char) * (len + 1));
-	else
-		line = (char *)malloc(sizeof(char) * (len + 2));
-	if (!line)
+	if (!str || str[0] == '\0')
 		return (NULL);
 	i = 0;
-	printf("5");
-	while (remain[i] != '\0' && remain[i] != '\n')
-	{
-		line[i] = remain[i];
+	while (str[i] != '\n' && str[i] != '\0')
 		i++;
-	}
-	printf("6");
-	if (remain[i] == '\n')
-		line[i++] = '\n';
-	line[i] = '\0';
-	printf("7");
+	line = ft_substr(str, 0, i + 1);
 	return (line);
+}
+
+static char	*update_line(char *str)
+{
+	int		i;
+	char	*new_remain;
+
+	if (!str || str[0] == '\0')
+		return (free(str), NULL);
+	i = 0;
+	while (str[i] != '\n' && str[i] != '\0')
+		i++;
+	if (str[i] == '\0')
+	{
+		free(str);
+		return (NULL);
+	}
+	new_remain = ft_substr(str, i + 1, ft_strlen(str) - i - 1);
+	free(str);
+	return (new_remain);
 }
 
 char	*get_next_line(int fd)
 {
 	static char	*remain = NULL;
-	char		*buf;
 	char		*line;
-	int			readed_byt;
-	
-	printf("8");
-	if (fd < 0 && BUFFER_SIZE <= 0)
+
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	buf = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	
-	while ((readed_byt = read(fd, buf, BUFFER_SIZE)) > 0)
-	{
-		buf[readed_byt] = '\0';
-		remain = ft_strjoin(remain, buf);
-		if (ft_strchr(remain, '\n'))
-			break;
-	}
-	free(buf);
-	printf("9");
-	if (!remain || !*remain)
-	{
-		if (remain)
-			free(remain);
+	remain = read_line(fd, remain);
+	if (!remain)
 		return (NULL);
-	}
-	printf("10");
-	line = ft_get_line(remain);
-	remain = ft_update_line(remain);
+	line = line_generator(remain);
+	remain = update_line(remain);
 	return (line);
 }

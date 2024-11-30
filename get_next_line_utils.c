@@ -5,44 +5,67 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmidik <tibetmdk@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/11 14:19:47 by tmidik            #+#    #+#             */
-/*   Updated: 2024/11/19 20:37:18 by tmidik           ###   ########.fr       */
+/*   Created: 2024/11/24 20:02:59 by tmidik            #+#    #+#             */
+/*   Updated: 2024/11/25 13:13:41 by tmidik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int ft_strlen(char *str)
+int	ft_strlen(const char *str)
 {
 	int	i;
 
 	i = 0;
 	while (str[i] != '\0')
-	{
 		i++;
-	}
 	return (i);
 }
 
-char	*ft_strchr(char *str, char c)
+char	*ft_strchr(char *s, int c)
 {
-	int	i;
-	
-	if (!str)
-		return (0);
+	if (!s)
+		return (NULL);
 	if (c == '\0')
-		return (str);
-	i = 0;
-	while (str[i] != '\0')
-	{
-		if (str[i] == c)
-			return ((char *)&str[i]);
-		i++;
-	}
-	return (0);	
+		return ((char *)&s[ft_strlen(s)]);
+	c = (unsigned char)c;
+	while (*s != c && *s != 0)
+		s++;
+	if (*s == c)
+		return ((char *)s);
+	return (NULL);
 }
 
-static char	*ft_strdup(char *s1)
+char	*ft_strjoin(char *s1, char *s2)
+{
+	int		i;
+	char	*res;
+
+	if (!s1)
+	{
+		s1 = (char *)malloc(sizeof(char) * 1);
+		if (!s1)
+			return (NULL);
+		s1[0] = '\0';
+	}
+	if (!s2)
+		return (NULL);
+	res = (char *)malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	if (!res)
+		return (NULL);
+	i = -1;
+	while (s1[++i])
+		res[i] = s1[i];
+	while (s2[i - ft_strlen(s1)])
+	{
+		res[i] = s2[i - ft_strlen(s1)];
+		i++;
+	}
+	res[i] = '\0';
+	return (free(s1), res);
+}
+
+char	*ft_strdup(const char *s1)
 {
 	char	*buffer;
 	int		i;
@@ -60,30 +83,28 @@ static char	*ft_strdup(char *s1)
 	return (buffer);
 }
 
-char	*ft_strjoin(char *s1, char *s2)
+char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
-	int		i;
-	char	*res;
+	size_t	i;
+	size_t	s_len;
+	char	*str;
 
-	if (!s1)
-		return (ft_strdup(s2));
-	if (!s2)
-		return (ft_strdup(s1));
-	if (!s1 && !s2)
+	if (!s)
 		return (NULL);
-	res = (char *)malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
-	if (!res)
+	s_len = ft_strlen(s);
+	if (start >= s_len)
+		return (ft_strdup(""));
+	if (len > s_len - start)
+		len = s_len - start;
+	str = (char *)malloc(sizeof(char) * (len + 1));
+	if (!str)
 		return (NULL);
-	i = -1;
-	while (s1[++i])
-		res[i] = s1[i];
-	while (s2[i - ft_strlen(s1)])
+	i = 0;
+	while (i < len)
 	{
-		res[i] = s2[i - ft_strlen(s1)];
+		str[i] = s[start + i];
 		i++;
 	}
-	free(s1);
-	res[i] = '\0';
-	return (res);
+	str[i] = '\0';
+	return (str);
 }
-
